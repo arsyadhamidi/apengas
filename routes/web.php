@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Middleware\CekLevel;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +17,11 @@ use Illuminate\Support\Facades\Route;
  */
 
 // Login
-Route::get('/login', [LoginController::class, 'index'])->name('login');
+Route::get('/login', [LoginController::class, 'index'])->name('login')->middleware('guest');
+Route::post('/login-action', [LoginController::class, 'authenticate'])->name('login.action');
+Route::get('/login-logout', [LoginController::class, 'logout'])->name('login.logout');
+
+// Admin
+Route::group(['middleware' => [CekLevel::class . ':Admin']], function () {
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+});
